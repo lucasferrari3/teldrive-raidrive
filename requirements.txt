@@ -1,0 +1,5 @@
+python-dotenv>=1.0.0
+
+# Linux FUSE mount (not needed on Windows / Dokany):
+# pyfuse3>=3.3.0
+# trio>=0.22.0

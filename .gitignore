@@ -1,0 +1,50 @@
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Packaging / build
+dist/
+build/
+*.whl
+
+# Cache / mount leftovers
+/mnt/
+.cache/
+*.fuse_hidden*
+*.log
+
+# Local archives
+*.zip
+*.tar.gz
+*.7z
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

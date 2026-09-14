@@ -1,0 +1,4 @@
+# Extra deps for Linux FUSE mount
+-r requirements.txt
+pyfuse3>=3.3.0
+trio>=0.22.0

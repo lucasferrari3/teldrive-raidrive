@@ -1,0 +1,16 @@
+* text=auto eol=lf
+
+*.py text
+*.md text
+*.txt text
+*.toml text
+*.yml text
+*.yaml text
+*.example text
+.gitignore text
+.gitattributes text
+.editorconfig text
+
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf

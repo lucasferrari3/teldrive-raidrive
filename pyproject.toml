@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "teldrive-raidrive"
+version = "0.6.0"
+description = "Teldrive/WebDAV mount with RaiDrive-style block cache (Dokany on Windows, FUSE on Linux)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Lucas Ferrari" }]
+keywords = ["teldrive", "webdav", "fuse", "dokany", "rclone", "streaming"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: System :: Filesystems",
+]
+dependencies = [
+  "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+linux = [
+  "pyfuse3>=3.3.0",
+  "trio>=0.22.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lucasferrari3/teldrive-raidrive"
+Issues = "https://github.com/lucasferrari3/teldrive-raidrive/issues"
+Teldrive = "https://github.com/tgdrive/teldrive"
+Dokany = "https://github.com/dokan-dev/dokany"
+
+[project.scripts]
+raidrive = "raidrive.main:main"
+
+[tool.setuptools.packages.find]
+include = ["raidrive*"]
