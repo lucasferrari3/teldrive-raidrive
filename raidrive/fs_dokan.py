@@ -89,11 +89,12 @@ from .dokan_api import (
     dokan_error_name,
     get_dokan,
     unix_to_filetime,
+    DOKAN_OPTION_NETWORK,
 )
 from .entry import FsEntry
 from .storage import StorageClient
 from .write import WriteStore
-
+import requests
 log = logging.getLogger("raidrive.dokan")
 
 # Windows probes these on every mount; never hit Teldrive for them.
@@ -871,10 +872,40 @@ class DokanTeldriveFS:
     def _get_disk_free_space(
         self, free_available, total_bytes, total_free, dokan_file_info
     ):
-        total = 8 * 1024 * 1024 * 1024 * 1024
-        free_available[0] = total
+        API_HOST = os.getenv("TELDRIVE_API_HOST", "").rstrip("/")
+        ACCESS_TOKEN = os.getenv("TELDRIVE_ACCESS_TOKEN", "")
+        API_KEY = os.getenv("TELDRIVE_API_KEY", "")
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+        }
+
+        if API_KEY:
+            headers["X-API-Key"] = API_KEY
+
+        url = f"{API_HOST}/api/files/categories"
+
+        response = requests.get(
+            url,
+            headers=headers,
+            timeout=30,
+        )
+
+        response.raise_for_status()
+
+        categories = response.json()
+        total_size = sum(
+            int(category.get("totalSize") or 0)
+            for category in categories
+        
+        )        
+
+        total = int(total_size * 2)
+        used = total_size
+        free = max(total - used, 0)
+
+        free_available[0] = free
         total_bytes[0] = total
-        total_free[0] = total
+        total_free[0] = free
         return STATUS_SUCCESS
 
     @staticmethod
@@ -968,7 +999,19 @@ class DokanTeldriveFS:
             "on",
         )
         options.SingleThread = 1 if single else 0
-        options.Options = DOKAN_OPTION_MOUNT_MANAGER
+        #Network shares require UNCName and DOKAN_OPTION_NETWORK; otherwise, use DOKAN_OPTION_MOUNT_MANAGER.
+        network = os.environ.get("NETWORK_SHARE", "0").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        )
+        if network:
+            options.UNCName = rf"\TelDrive\{os.environ.get('UNC_NAME', 'TelDrive')}"
+            options.Options = DOKAN_OPTION_NETWORK
+        else:
+            options.UNCName = None
+            options.Options = DOKAN_OPTION_MOUNT_MANAGER
         if self._read_only:
             options.Options |= DOKAN_OPTION_WRITE_PROTECT
         debug = os.environ.get("DOKAN_DEBUG", "0").strip().lower() in (
@@ -981,7 +1024,7 @@ class DokanTeldriveFS:
             options.Options |= DOKAN_OPTION_DEBUG | DOKAN_OPTION_STDERR
         options.GlobalContext = 0
         options.MountPoint = cast(self._mount_buf, c_wchar_p)
-        options.UNCName = None
+        
         options.Timeout = self._timeout_ms
         options.AllocationUnitSize = 4096
         options.SectorSize = 512

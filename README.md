@@ -146,6 +146,10 @@ Ou use `TELDRIVE_API_KEY` (`X-Api-Key`).
 | `MODE` | — | Permissões octais (Linux) |
 | `MOUNT_UID` / `MOUNT_GID` | user | Dono (Linux) |
 | `ALLOW_OTHER` | `0` | Outros users (Linux / fuse.conf) |
+| `NETWORK_SHARE` | `0` | Ativa o modo Network do Dokan no Windows |
+| `UNC_NAME` | `TelDrive` | Nome final do compartilhamento quando `NETWORK_SHARE=1`. O prefixo `\TelDrive\` é adicionado automaticamente |
+
+> `NETWORK_SHARE` e `UNC_NAME` são específicos do Windows/Dokany. Quando `NETWORK_SHARE=0`, `UNC_NAME` é ignorado e nenhum nome UNC é configurado.
 
 Veja `.env.example` para um template completo.
 
